@@ -1,5 +1,36 @@
+use std::collections::HashMap;
+
+/*
+fn _unique(a: Vec<i32>) -> Vec<i32> {
+    let mut lookup: HashMap<i32, Vec<usize>> = HashMap::new();
+    a.iter().enumerate().for_each(|(idx, el)| {
+        let vex = lookup.get(el);
+        match vex {
+            Some(vec) => {
+                vec.push(idx);
+            }
+            None => {
+                lookup.insert(*el, vec![]);
+            }
+        };
+    });
+    vec![]
+}*/
+
 fn unique(a: Vec<i32>) -> Vec<i32> {
-    todo!()
+    let mut lookup: HashMap<i32, ()> = HashMap::new();
+    a.iter()
+        .filter_map(|&x| {
+            let contained = lookup.get(&x);
+            match contained {
+                Some(_) => None,
+                None => {
+                    lookup.insert(x, ());
+                    Some(x)
+                }
+            }
+        })
+        .collect()
 }
 
 // advanced 1: use generic types
