@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::hash::Hash;
 
 /*
 fn _unique(a: Vec<i32>) -> Vec<i32> {
@@ -17,7 +18,25 @@ fn _unique(a: Vec<i32>) -> Vec<i32> {
     vec![]
 }*/
 
-fn unique(a: Vec<i32>) -> Vec<i32> {
+fn unique<T>(a: Vec<T>) -> Vec<T>
+where
+    T: Hash + Eq + Copy,
+{
+    let mut lookup: HashMap<T, ()> = HashMap::new();
+    a.iter()
+        .filter_map(|&x| {
+            let contained = lookup.get(&x);
+            match contained {
+                Some(_) => None,
+                None => {
+                    lookup.insert(x, ());
+                    Some(x)
+                }
+            }
+        })
+        .collect()
+}
+fn _unique(a: Vec<i32>) -> Vec<i32> {
     let mut lookup: HashMap<i32, ()> = HashMap::new();
     a.iter()
         .filter_map(|&x| {
@@ -56,7 +75,7 @@ fn main() {
 
 #[test]
 fn empty_list() {
-    let input = vec![];
+    let input: Vec<Hash + Eq + Copy> = vec![];
     let expected_output = vec![];
     let actual_output = unique(input);
     assert_eq!(actual_output, expected_output);
