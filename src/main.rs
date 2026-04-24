@@ -14,9 +14,7 @@ trait Deadline {
 
 impl Deadline for ImportantEvent {
     fn is_passed(&self) -> bool {
-        let today = Local::now().date_naive();
-        dbg!(self.when.cmp(&today));
-        matches!(self.when.cmp(&today), Ordering::Less)
+        self.when < Local::now().date_naive()
     }
 }
 
