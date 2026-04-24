@@ -45,7 +45,7 @@ impl Hand {
         Hand { cards: vec![] }
     }
 
-    fn add(&mut self, card: Card) {
+    fn hit(&mut self, card: Card) {
         self.cards.push(card);
     }
 
@@ -77,8 +77,8 @@ impl Hand {
 
 fn main() {
     let mut hand = Hand::new();
-    hand.add(Card::King);
-    hand.add(Card::Ace);
+    hand.hit(Card::King);
+    hand.hit(Card::Ace);
 }
 
 #[test]
@@ -91,8 +91,8 @@ fn empty_hand() {
 #[test]
 fn strong_hand() {
     let mut hand = Hand::new();
-    hand.add(Card::Queen);
-    hand.add(Card::Ace);
+    hand.hit(Card::Queen);
+    hand.hit(Card::Ace);
 
     assert_eq!(hand.value(), 21);
 }
@@ -100,9 +100,9 @@ fn strong_hand() {
 #[test]
 fn risky_hand() {
     let mut hand = Hand::new();
-    hand.add(Card::King);
-    hand.add(Card::Queen);
-    hand.add(Card::Ace);
+    hand.hit(Card::King);
+    hand.hit(Card::Queen);
+    hand.hit(Card::Ace);
 
     assert_eq!(hand.value(), 21);
 }
@@ -110,9 +110,9 @@ fn risky_hand() {
 #[test]
 fn oops() {
     let mut hand = Hand::new();
-    hand.add(Card::King);
-    hand.add(Card::Seven);
-    hand.add(Card::Five);
+    hand.hit(Card::King);
+    hand.hit(Card::Seven);
+    hand.hit(Card::Five);
 
     assert!(hand.is_loosing_hand());
     assert_eq!(hand.value(), 22);
@@ -121,8 +121,8 @@ fn oops() {
 #[test]
 fn weird_hand() {
     let mut hand = Hand::new();
-    hand.add(Card::Ace);
-    hand.add(Card::Ace);
+    hand.hit(Card::Ace);
+    hand.hit(Card::Ace);
 
     assert_eq!(hand.value(), 12);
 }
