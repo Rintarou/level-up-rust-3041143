@@ -1,9 +1,11 @@
+use std::cmp::Ordering;
+
 use chrono::{Duration, TimeZone};
-use chrono::{Date, Local};
+use chrono::{Local, NaiveDate};
 
 struct ImportantEvent {
     what: String,
-    when: Date<Local>,
+    when: NaiveDate,
 }
 
 trait Deadline {
@@ -12,16 +14,18 @@ trait Deadline {
 
 impl Deadline for ImportantEvent {
     fn is_passed(&self) -> bool {
-        todo!();
+        let today = Local::now().date_naive();
+        dbg!(self.when.cmp(&today));
+        matches!(self.when.cmp(&today), Ordering::Less)
     }
 }
 
 fn main() {
     let missed_christmas = ImportantEvent {
         what: String::from("Christmas"),
-        when: Local.ymd(2020, 12, 25),
+        when: NaiveDate::from_ymd_opt(2020, 12, 25).unwrap(),
     };
-    
+
     if missed_christmas.is_passed() {
         println!("oh well, maybe next year");
     } else {
@@ -33,7 +37,7 @@ fn main() {
 fn in_past() {
     let event = ImportantEvent {
         what: String::from("friend's birthday"),
-        when: Local::today() - Duration::hours(25),
+        when: Local::now().date_naive() - Duration::hours(25),
     };
 
     assert!(event.is_passed())
@@ -43,9 +47,8 @@ fn in_past() {
 fn in_future() {
     let event = ImportantEvent {
         what: String::from("friend's birthday"),
-        when: Local::today() + Duration::hours(25),
+        when: Local::now().date_naive() + Duration::hours(25),
     };
 
     assert!(!event.is_passed())
 }
-
