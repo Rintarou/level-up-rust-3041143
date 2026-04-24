@@ -16,15 +16,33 @@ enum Card {
     King,
 }
 
+impl Card {
+    fn to_usize(&self) -> Option<usize> {
+        use Card::*;
+        match self {
+            Ace => None,
+            Two => Some(2),
+            Three => Some(3),
+            Four => Some(4),
+            Five => Some(5),
+            Six => Some(6),
+            Seven => Some(7),
+            Eight => Some(8),
+            Nine => Some(9),
+            Jack => Some(10),
+            Queen => Some(10),
+            King => Some(10),
+        }
+    }
+}
+
 struct Hand {
     cards: Vec<Card>,
 }
 
 impl Hand {
     fn new() -> Self {
-        Hand {
-            cards: vec![],
-        }
+        Hand { cards: vec![] }
     }
 
     fn add(&mut self, card: Card) {
@@ -32,8 +50,24 @@ impl Hand {
     }
 
     fn value(&self) -> usize {
-        // TODO: implement this method
-        0 
+        let sum = self
+            .cards
+            .iter()
+            .map(Card::to_usize)
+            .fold(0, |sum, i| sum + i.unwrap_or(0));
+
+        let aces = self
+            .cards
+            .iter()
+            .filter(|card| matches!(card, Card::Ace))
+            .count();
+
+        // possible ace values combination
+        (aces..=aces * 11)
+            .step_by(10)
+            .filter_map(|x| if x + sum <= 21 { Some(x + sum) } else { None })
+            .max()
+            .unwrap_or(sum)
     }
 
     fn is_loosing_hand(&self) -> bool {
@@ -46,7 +80,6 @@ fn main() {
     hand.add(Card::King);
     hand.add(Card::Ace);
 }
-
 
 #[test]
 fn empty_hand() {
@@ -70,7 +103,7 @@ fn risky_hand() {
     hand.add(Card::King);
     hand.add(Card::Queen);
     hand.add(Card::Ace);
-    
+
     assert_eq!(hand.value(), 21);
 }
 
@@ -80,7 +113,16 @@ fn oops() {
     hand.add(Card::King);
     hand.add(Card::Seven);
     hand.add(Card::Five);
-    
+
     assert!(hand.is_loosing_hand());
     assert_eq!(hand.value(), 22);
+}
+
+#[test]
+fn weird_hand() {
+    let mut hand = Hand::new();
+    hand.add(Card::Ace);
+    hand.add(Card::Ace);
+
+    assert_eq!(hand.value(), 12);
 }
