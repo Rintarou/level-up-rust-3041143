@@ -1,14 +1,11 @@
-use chrono::NaiveDate;
+use chrono::{NaiveDate, ParseError};
 
-#[derive(Debug, Clone)]
-struct WeeksBetweenError;
-
-fn weeks_between(a: &str, b: &str) -> Result<i32, WeeksBetweenError> {
-    let d_one: NaiveDate = a.parse().map_err(|_| WeeksBetweenError)?;
-    let d_two: NaiveDate = b.parse().map_err(|_| WeeksBetweenError)?;
+fn weeks_between(a: &str, b: &str) -> Result<i64, ParseError> {
+    let d_one: NaiveDate = a.parse()?;
+    let d_two: NaiveDate = b.parse()?;
 
     let value = d_two - d_one;
-    value.num_weeks().try_into().map_err(|_| WeeksBetweenError)
+    Ok(value.num_weeks())
 }
 
 fn main() {
