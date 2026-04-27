@@ -33,3 +33,9 @@ fn past() {
     let n_weeks = weeks_between("1010-10-18", "1010-10-10").unwrap();
     assert_eq!(n_weeks, -1);
 }
+
+#[test]
+fn parse_error() {
+    let n_weeks = weeks_between("YYYY-MM-DD", "1010-10-10");
+    assert!(n_weeks.is_err());
+}
