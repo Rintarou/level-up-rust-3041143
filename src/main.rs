@@ -1,4 +1,4 @@
-use std::str::FromStr;
+use std::{num::ParseIntError, str::FromStr, string::ParseError};
 
 struct Isbn {
     raw: String,
@@ -6,10 +6,18 @@ struct Isbn {
 }
 
 impl FromStr for Isbn {
-    type Err = (); // TODO: replace with appropriate type
+    type Err = ParseIntError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        todo!();        
+        let vex = s
+            .chars()
+            .filter_map(|c| c.to_digit(10))
+            .map(|digit| digit.to_be_bytes()[0])
+            .collect::<Vec<u8>>();
+        Ok(Isbn {
+            digits: vex,
+            raw: s.to_string(),
+        })
     }
 }
 
@@ -21,7 +29,17 @@ impl std::fmt::Display for Isbn {
 
 // https://en.wikipedia.org/wiki/International_Standard_Book_Number#ISBN-13_check_digit_calculation
 fn calculate_check_digit(digits: &[u8]) -> u8 {
-    todo!()
+    let coefficient = [1u8, 3].iter().cycle().take(12);
+
+    (10u8
+        - (digits
+            .iter()
+            .zip(coefficient)
+            .fold(0u8, |arg0: u8, (rhs, coef)| {
+                u8::strict_add(arg0, *rhs * coef)
+            })
+            % 10))
+        % 10
 }
 
 fn main() {
@@ -47,4 +65,9 @@ fn can_correctly_calculate_check_digits() {
 #[test]
 fn rust_in_action() {
     let _: Isbn = "978-3-16-148410-0".parse().unwrap();
+}
+
+#[test]
+fn just_checking() {
+    assert_eq!(0u8, 10u8 % 10);
 }
