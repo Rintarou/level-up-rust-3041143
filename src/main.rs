@@ -21,6 +21,15 @@ impl FromStr for Isbn {
     }
 }
 
+impl Isbn {
+    fn check(&self) -> bool {
+        match &self.digits.last() {
+            Some(check_digit) => calculate_check_digit(&self.digits).eq(check_digit),
+            None => false,
+        }
+    }
+}
+
 impl std::fmt::Display for Isbn {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.raw)
@@ -64,7 +73,8 @@ fn can_correctly_calculate_check_digits() {
 
 #[test]
 fn rust_in_action() {
-    let _: Isbn = "978-3-16-148410-0".parse().unwrap();
+    let isbn: Isbn = "978-3-16-148410-0".parse().unwrap();
+    assert!(isbn.check());
 }
 
 #[test]
