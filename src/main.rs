@@ -1,4 +1,7 @@
-use std::path;
+use std::{
+    fs::{self, OpenOptions},
+    path,
+};
 
 trait FileMetadata {
     fn exists(&self) -> bool;
@@ -10,20 +13,20 @@ trait FileMetadata {
 
 impl FileMetadata for path::Path {
     fn is_readable(&self) -> bool {
-        todo!();
+        self.is_file() && OpenOptions::new().read(true).open(self).is_ok()
     }
 
     fn is_writeable(&self) -> bool {
-        todo!();
+        self.is_file() && OpenOptions::new().write(true).open(self).is_ok()
     }
 
     fn exists(&self) -> bool {
-        todo!();
+        self.is_file() && self.metadata().is_ok()
     }
 }
 
 fn main() {
-    // 
+    //
 }
 
 #[test]
@@ -46,7 +49,7 @@ fn read_only() {
     let mut perms = fs::metadata(f.path()).unwrap().permissions();
     perms.set_readonly(true);
     fs::set_permissions(f.path(), perms).unwrap();
-    assert_eq!(f.path().is_writeable(), false);
+    assert!(!f.path().is_writeable());
 
     fs::remove_file(f.path()).unwrap();
 }
